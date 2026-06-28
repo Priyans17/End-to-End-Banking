@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://aura-backend.onrender.com/api/:path*" },
+    { "source": "/api/:path*", "destination": "https://end-to-end-banking.onrender.com/api/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
