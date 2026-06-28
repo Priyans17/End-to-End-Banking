@@ -1,108 +1,97 @@
-<!-- # Aura Financial Platform
+# Aura — End-to-End Banking Platform
 
-A full-stack MERN banking and eCommerce demo application built for showcasing BrowserStack testing capabilities.
+A full-stack financial platform built with the MERN stack. Covers banking, investments, insurance, and an integrated marketplace with Stripe payments.
+
+Live: https://bankaura.vercel.app
+
+---
 
 ## Tech Stack
 
-- **Frontend**: React 19 + Vite + Tailwind CSS (port 3000)
-- **Backend**: Express.js + Node.js (port 5000)
-- **Database**: MongoDB Atlas
-- **Payments**: Stripe (Payment)
-- **Auth**: JWT + bcrypt
+- Frontend: React, Vite, Tailwind CSS
+- Backend: Node.js, Express
+- Database: MongoDB Atlas
+- Payments: Stripe (Payment Element)
+- Auth: JWT
+
+---
 
 ## Features
 
-- Banking (accounts, transfers, beneficiaries, bill pay, cards, statements)
-- Equity Trading (NYSE/NASDAQ/LSE/Euronext stocks, portfolio, orders)
-- Mutual Funds (explore, lump sum invest, SIP manager)
-- Insurance (compare plans, apply, my policies, claims)
-- Marketplace (shop, cart, coupon codes, Stripe checkout)
-- Notifications (real-time bell with unread count)
-- USD currency, international banking
+- Banking — accounts, transfers, bill payments, cards
+- Equity Trading — international stocks (NYSE, NASDAQ, LSE)
+- Mutual Funds — explore, invest, SIP manager
+- Insurance — compare plans, apply, manage policies
+- Marketplace — shop, cart, coupon codes, checkout
+- Notifications — real-time bell with unread count
 
-## Project Structure
+---
 
-```
-E2E Banking/
-├── frontend/          # React + Vite app
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── context/
-│   │   └── ...
-│   ├── vercel.json    # Vercel deployment config
-│   └── package.json
-└── server/            # Express API
-    ├── models/
-    ├── routes/
-    ├── middleware/
-    ├── render.yaml    # Render deployment config
-    └── package.json
-```
-
-## Local Development
+## Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- MongoDB Atlas account (or local MongoDB)
-- Stripe account (test keys)
 
-### Setup
+- Node.js 18 or higher
+- A MongoDB Atlas account
+- A Stripe account (test keys)
 
-**1. Clone the repo**
+### Clone the repository
+
 ```bash
-git clone https://github.com/Priyans17/E2E_Banking.git
-cd E2E_Banking
+git clone https://github.com/Priyans17/End-to-End-Banking.git
+cd End-to-End-Banking
 ```
 
-**2. Backend setup**
+### Backend setup
+
 ```bash
 cd server
 npm install
 ```
 
-Create `server/.env` (never commit this file):
-```
-PORT=5000
-MONGODB_URI=your_mongodb_atlas_connection_string
-JWT_SECRET=your_strong_random_secret_here
-JWT_EXPIRES_IN=7d
-NODE_ENV=development
-FRONTEND_URL=http://localhost:3000
-STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
-STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
-```
+Create a file named `.env` inside the `server` folder. Use `server/.env.example` as a reference — fill in your own values. Never commit this file.
 
-Start the backend:
 ```bash
 npm run dev
 ```
 
-**3. Frontend setup**
+Backend runs on http://localhost:5000
+
+### Frontend setup
+
 ```bash
 cd frontend
 npm install
-```
-
-Create `frontend/.env.local` (never commit this file):
-```
-VITE_STRIPE_PK=pk_test_your_stripe_publishable_key
-```
-
-Start the frontend:
-```bash
 npm run dev
 ```
 
-**4. Open** http://localhost:3000
+Frontend runs on http://localhost:3000
 
-### Test Payment Cards (Stripe)
-| Card | Number |
-|------|--------|
-| Visa (success) | 4242 4242 4242 4242 |
-| Mastercard | 5555 5555 5555 4444 |
-| Declined | 4000 0000 0000 0002 |
-| 3D Secure | 4000 0025 0000 3155 |
+The frontend proxies all `/api` requests to the backend automatically in development.
 
-Expiry: any future date · CVV: any 3 digits · ZIP: any
- -->
+---
+
+## Environment Variables
+
+See `server/.env.example` for the full list of required backend variables.
+
+For the frontend, create `frontend/.env.local` and add:
+
+```
+VITE_STRIPE_PK=your_stripe_publishable_key
+```
+
+---
+
+## Deployment
+
+- Backend: Render (root directory: `server`)
+- Frontend: Vercel (root directory: `frontend`)
+
+The `frontend/vercel.json` file handles SPA routing and API proxying to the backend.
+
+---
+
+## License
+
+MIT
