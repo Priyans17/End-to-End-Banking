@@ -1,6 +1,6 @@
-export default function StatCard({ title, value, subtitle, icon: Icon, color = '#1e3a8a', trend }) {
+export default function StatCard({ title, value, subtitle, icon: Icon, color = '#1e3a8a', trend, ...rest }) {
   return (
-    <div style={{
+    <div {...rest} style={{
       background: 'white', borderRadius: 16, padding: 24,
       border: '1.5px solid #f1f5f9', boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
       display: 'flex', flexDirection: 'column', gap: 12
