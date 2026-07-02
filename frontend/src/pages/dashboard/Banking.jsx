@@ -228,7 +228,7 @@ function TransferForm({ token, accounts, onSuccess }) {
       <form onSubmit={handleTransfer} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         <div>
           <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>From Account</label>
-          <select value={form.fromAccount} onChange={e => setForm({...form, fromAccount: e.target.value})} required style={inp}>
+          <select id='from-account' data-testid='from-account-select' aria-label='From Account' value={form.fromAccount} onChange={e => setForm({...form, fromAccount: e.target.value})} required style={inp}>
             <option value="">Select account</option>
             {accounts.map(a => <option key={a._id} value={a._id}>{a.type.replace('_',' ')} — ****{a.accountNumber?.slice(-4)} · {new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(a.balance)}</option>)}
           </select>
@@ -236,18 +236,18 @@ function TransferForm({ token, accounts, onSuccess }) {
         </div>
         <div>
           <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>To Account / IBAN</label>
-          <input type="text" required placeholder="e.g. GB29NWBK60161331926819" value={form.toAccount} onChange={e => setForm({...form, toAccount: e.target.value})} style={inp} />
+          <input id='to-account' data-testid='to-account-input' aria-label='To Account or IBAN' type="text" required placeholder="e.g. GB29NWBK60161331926819" value={form.toAccount} onChange={e => setForm({...form, toAccount: e.target.value})} style={inp} />
           <div style={hint}>IBAN (e.g. GB29NWBK60161331926819) or 10-digit account number</div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
           <div>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>Amount (USD)</label>
-            <input type="number" required min="1" step="0.01" placeholder="e.g. 500.00" value={form.amount} onChange={e => setForm({...form, amount: e.target.value})} style={inp} />
+            <input id='transfer-amount' data-testid='transfer-amount-input' aria-label='Transfer Amount in USD' type="number" required min="1" step="0.01" placeholder="e.g. 500.00" value={form.amount} onChange={e => setForm({...form, amount: e.target.value})} style={inp} />
             <div style={hint}>Min: $1.00 · Max: {selectedAcc ? new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(selectedAcc.balance) : 'your balance'}</div>
           </div>
           <div>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>Method</label>
-            <select value={form.mode} onChange={e => setForm({...form, mode: e.target.value})} style={inp}>
+            <select id='transfer-method' data-testid='transfer-method-select' aria-label='Transfer Method' value={form.mode} onChange={e => setForm({...form, mode: e.target.value})} style={inp}>
               <option>SWIFT</option>
               <option>SEPA</option>
               <option>ACH</option>
@@ -259,7 +259,7 @@ function TransferForm({ token, accounts, onSuccess }) {
         </div>
         <div>
           <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>Reference / Remarks</label>
-          <input type="text" placeholder="e.g. Rent Jan 2025 or Invoice #1042" value={form.remarks} onChange={e => setForm({...form, remarks: e.target.value})} style={inp} />
+          <input type="text" placeholder="e.g. Rent Jan 2025 or Invoice #1042" id='transfer-remarks' data-testid='transfer-remarks-input' aria-label='Transfer Remarks' value={form.remarks} onChange={e => setForm({...form, remarks: e.target.value})} style={inp} />
           <div style={hint}>Optional note for the recipient (max 100 characters)</div>
         </div>
         <div style={{ padding: 12, background: '#f0f9ff', borderRadius: 8, border: '1px solid #bae6fd', fontSize: 12, color: '#0369a1', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
