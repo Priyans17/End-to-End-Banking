@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import { CheckCircle, CreditCard } from 'lucide-react'
+import { CheckCircle, CreditCard, Lock } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { loadStripe } from '@stripe/stripe-js'
-import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 
 const STRIPE_PK = import.meta.env.VITE_STRIPE_PK || 'pk_test_51TkAoS21YKdjh046zUw3HUsIg3oy7t7tA18wDB80j4P1ydvwgyUdPdZyoMy6Uj449LFT1TnYmBSzgD4lQOdwW8PV00QgKTo1Ul'
 const stripePromise = loadStripe(STRIPE_PK)
@@ -11,30 +11,56 @@ const stripePromise = loadStripe(STRIPE_PK)
 const fmt = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(n || 0)
 const inp = { width: '100%', padding: '11px 14px', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: 14, fontFamily: 'Urbanist,sans-serif', outline: 'none', boxSizing: 'border-box' }
 
-function StripePaymentForm({ total, onSuccess, onBack }) {
+const CARD_STYLE = {
+  style: {
+    base: {
+      fontSize: '15px',
+      fontFamily: 'Urbanist, sans-serif',
+      color: '#0f172a',
+      '::placeholder': { color: '#94a3b8' },
+      iconColor: '#1e3a8a',
+    },
+    invalid: { color: '#dc2626', iconColor: '#dc2626' }
+  }
+}
+
+function StripeCardForm({ total, onSuccess, onBack }) {
   const stripe = useStripe()
   const elements = useElements()
   const [loading, setLoading] = useState(false)
+  const [cardError, setCardError] = useState('')
 
   const handlePay = async (e) => {
     e.preventDefault()
     if (!stripe || !elements) return
     setLoading(true)
+    setCardError('')
     try {
-      const { error, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        redirect: 'if_required',
-        confirmParams: {
-          return_url: window.location.origin + '/dashboard/orders'
-        }
+      const cardElement = elements.getElement(CardElement)
+      const { error, paymentMethod } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: cardElement,
       })
       if (error) throw new Error(error.message)
-      if (paymentIntent && paymentIntent.status === 'succeeded') {
-        onSuccess(paymentIntent.id)
-      } else if (paymentIntent) {
-        throw new Error('Payment not completed. Status: ' + paymentIntent.status)
+
+      // Confirm the payment intent with the payment method
+      const res = await fetch('/api/payments/confirm-card', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + localStorage.getItem('aura_token') },
+        body: JSON.stringify({ paymentMethodId: paymentMethod.id, amount: total })
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message)
+
+      if (data.requiresAction) {
+        const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(data.clientSecret)
+        if (confirmError) throw new Error(confirmError.message)
+        if (paymentIntent.status === 'succeeded') onSuccess(paymentIntent.id)
+      } else {
+        onSuccess(data.paymentIntentId)
       }
     } catch (err) {
+      setCardError(err.message)
       toast.error(err.message)
     } finally {
       setLoading(false)
@@ -43,15 +69,26 @@ function StripePaymentForm({ total, onSuccess, onBack }) {
 
   return (
     <form onSubmit={handlePay} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div style={{ padding: 20, background: '#fafafa', borderRadius: 12, border: '1.5px solid #e2e8f0' }}>
-        <PaymentElement options={{ layout: 'tabs' }} />
+      <div>
+        <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 8 }}>Card Details</label>
+        <div style={{ padding: '14px 16px', background: 'white', borderRadius: 10, border: '1.5px solid #e2e8f0' }}>
+          <CardElement options={CARD_STYLE} onChange={e => setCardError(e.error ? e.error.message : '')} />
+        </div>
+        {cardError && <div style={{ fontSize: 12, color: '#dc2626', marginTop: 6 }}>{cardError}</div>}
       </div>
-      <div style={{ padding: 12, background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0', fontSize: 12, color: '#15803d' }}>
-        <strong>Test card:</strong> 4242 4242 4242 4242 · Any future date · Any CVV
+
+      <div style={{ padding: '10px 14px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0', fontSize: 12, color: '#15803d' }}>
+        <strong>Test card:</strong> 4242 4242 4242 4242 · Any future date · Any CVV · Any ZIP
       </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#64748b' }}>
+        <Lock size={12} color="#16a34a" />
+        <span>Secured by Stripe · 256-bit SSL encryption</span>
+      </div>
+
       <div style={{ display: 'flex', gap: 12 }}>
         <button type="button" onClick={onBack} style={{ flex: 1, padding: '12px', background: 'white', border: '1.5px solid #e2e8f0', borderRadius: 10, cursor: 'pointer', fontFamily: 'Urbanist,sans-serif', fontSize: 14, fontWeight: 600, color: '#374151' }}>Back</button>
-        <button type="submit" disabled={loading || !stripe} style={{ flex: 2, padding: '13px', background: 'linear-gradient(135deg,#1e3a8a,#6366f1)', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Urbanist,sans-serif', opacity: loading ? 0.7 : 1 }}>
+        <button type="submit" disabled={loading || !stripe} style={{ flex: 2, padding: '13px', background: loading ? '#94a3b8' : 'linear-gradient(135deg,#1e3a8a,#6366f1)', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Urbanist,sans-serif' }}>
           {loading ? 'Processing...' : 'Pay ' + fmt(total)}
         </button>
       </div>
@@ -78,7 +115,7 @@ export default function Checkout() {
   const tax = Math.round(subtotal * 0.08 * 100) / 100
   const total = subtotal + shipping + tax - (cart.discount || 0)
 
-  const createPaymentIntent = async () => {
+  const preparePayment = async () => {
     setLoading(true)
     try {
       const res = await fetch('/api/payments/create-intent', {
@@ -103,7 +140,7 @@ export default function Checkout() {
       const orderRes = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
-        body: JSON.stringify({ shippingAddress: address, paymentMethod: 'stripe', paymentId: piId })
+        body: JSON.stringify({ shippingAddress: address, paymentMethod: 'card', paymentId: piId })
       })
       const orderData = await orderRes.json()
       if (!orderRes.ok) throw new Error(orderData.message)
@@ -189,8 +226,8 @@ export default function Checkout() {
                     {['United States','United Kingdom','Canada','Australia','Germany','France','Singapore','UAE','Japan','India'].map(c => <option key={c}>{c}</option>)}
                   </select>
                 </div>
-                <button onClick={() => { if (!address.name || !address.line1 || !address.city || !address.zip) { toast.error('Please fill all required fields'); return } createPaymentIntent() }} disabled={loading} style={{ padding: '13px', background: 'linear-gradient(135deg,#1e3a8a,#6366f1)', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Urbanist,sans-serif' }}>
-                  {loading ? 'Preparing payment...' : 'Continue to Payment'}
+                <button onClick={() => { if (!address.name || !address.line1 || !address.city || !address.zip) { toast.error('Please fill all required fields'); return } preparePayment() }} disabled={loading} style={{ padding: '13px', background: 'linear-gradient(135deg,#1e3a8a,#6366f1)', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Urbanist,sans-serif' }}>
+                  {loading ? 'Preparing...' : 'Continue to Payment'}
                 </button>
               </div>
             </div>
@@ -198,9 +235,10 @@ export default function Checkout() {
 
           {step === 2 && clientSecret && (
             <div>
-              <h3 style={{ fontSize: 17, fontWeight: 700, color: '#0f172a', marginBottom: 20 }}>Card Payment</h3>
-              <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'stripe', variables: { colorPrimary: '#1e3a8a', fontFamily: 'Urbanist, sans-serif', borderRadius: '8px' } } }}>
-                <StripePaymentForm total={total} onSuccess={handlePaymentSuccess} onBack={() => { setStep(1); setClientSecret(null) }} />
+              <h3 style={{ fontSize: 17, fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>Card Payment</h3>
+              <p style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>Enter your card details below to complete the purchase.</p>
+              <Elements stripe={stripePromise} options={{ clientSecret }}>
+                <StripeCardForm total={total} onSuccess={handlePaymentSuccess} onBack={() => { setStep(1); setClientSecret(null) }} />
               </Elements>
             </div>
           )}

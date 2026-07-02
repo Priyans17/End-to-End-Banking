@@ -190,4 +190,45 @@ router.post('/webhook', async (req, res) => {
   }
 })
 
+
+// Confirm card payment with paymentMethodId
+router.post('/confirm-card', auth, async (req, res) => {
+  try {
+    const { paymentMethodId, amount } = req.body
+    if (!paymentMethodId || !amount) return res.status(400).json({ message: 'paymentMethodId and amount are required' })
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(parseFloat(amount) * 100),
+      currency: 'usd',
+      payment_method: paymentMethodId,
+      confirm: true,
+      automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
+      metadata: { userId: req.user._id.toString() }
+    })
+
+    if (paymentIntent.status === 'requires_action') {
+      return res.json({ requiresAction: true, clientSecret: paymentIntent.client_secret })
+    }
+
+    if (paymentIntent.status === 'succeeded') {
+      const accounts = await Account.find({ user: req.user._id, isActive: true })
+      const account = accounts[0]
+      if (account) {
+        await Transaction.create({
+          user: req.user._id, account: account._id,
+          type: 'debit', amount: parseFloat(amount), balance: account.balance,
+          description: 'Card Payment',
+          mode: 'PURCHASE', status: 'success', reference: paymentIntent.id
+        })
+      }
+      return res.json({ success: true, paymentIntentId: paymentIntent.id })
+    }
+
+    res.status(402).json({ message: 'Payment not completed. Status: ' + paymentIntent.status })
+  } catch (err) {
+    console.error('confirm-card error:', err.message)
+    res.status(500).json({ message: err.message })
+  }
+})
+
 module.exports = router
