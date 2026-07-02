@@ -28,3 +28,6 @@ Thumbs.db
 # Temp
 fix_*.py
 *.tmp
+
+# Test Companion onboarding (local, per-machine)
+.test-companion/
