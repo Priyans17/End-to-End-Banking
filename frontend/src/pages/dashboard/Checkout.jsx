@@ -24,7 +24,7 @@ const CARD_STYLE = {
   }
 }
 
-function StripeCardForm({ total, onSuccess, onBack }) {
+function StripeCardForm({ clientSecret, total, onSuccess, onBack }) {
   const stripe = useStripe()
   const elements = useElements()
   const [loading, setLoading] = useState(false)
@@ -37,30 +37,19 @@ function StripeCardForm({ total, onSuccess, onBack }) {
     setCardError('')
     try {
       const cardElement = elements.getElement(CardElement)
-      const { error, paymentMethod } = await stripe.createPaymentMethod({
-        type: 'card',
-        card: cardElement,
+      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: { card: cardElement }
       })
-      if (error) throw new Error(error.message)
-
-      // Confirm the payment intent with the payment method
-      const res = await fetch('/api/payments/confirm-card', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + localStorage.getItem('aura_token') },
-        body: JSON.stringify({ paymentMethodId: paymentMethod.id, amount: total })
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message)
-
-      if (data.requiresAction) {
-        const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(data.clientSecret)
-        if (confirmError) throw new Error(confirmError.message)
-        if (paymentIntent.status === 'succeeded') onSuccess(paymentIntent.id)
+      if (error) {
+        setCardError(error.message)
+        throw new Error(error.message)
+      }
+      if (paymentIntent && paymentIntent.status === 'succeeded') {
+        onSuccess(paymentIntent.id)
       } else {
-        onSuccess(data.paymentIntentId)
+        throw new Error('Payment not completed. Status: ' + paymentIntent?.status)
       }
     } catch (err) {
-      setCardError(err.message)
       toast.error(err.message)
     } finally {
       setLoading(false)
@@ -71,7 +60,7 @@ function StripeCardForm({ total, onSuccess, onBack }) {
     <form onSubmit={handlePay} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div>
         <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 8 }}>Card Details</label>
-        <div style={{ padding: '14px 16px', background: 'white', borderRadius: 10, border: '1.5px solid #e2e8f0' }}>
+        <div style={{ padding: '16px', background: 'white', borderRadius: 10, border: '1.5px solid #e2e8f0' }}>
           <CardElement options={CARD_STYLE} onChange={e => setCardError(e.error ? e.error.message : '')} />
         </div>
         {cardError && <div style={{ fontSize: 12, color: '#dc2626', marginTop: 6 }}>{cardError}</div>}
@@ -236,9 +225,9 @@ export default function Checkout() {
           {step === 2 && clientSecret && (
             <div>
               <h3 style={{ fontSize: 17, fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>Card Payment</h3>
-              <p style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>Enter your card details below to complete the purchase.</p>
-              <Elements stripe={stripePromise} options={{ clientSecret }}>
-                <StripeCardForm total={total} onSuccess={handlePaymentSuccess} onBack={() => { setStep(1); setClientSecret(null) }} />
+              <p style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>Enter your card details to complete the purchase.</p>
+              <Elements stripe={stripePromise}>
+                <StripeCardForm clientSecret={clientSecret} total={total} onSuccess={handlePaymentSuccess} onBack={() => { setStep(1); setClientSecret(null) }} />
               </Elements>
             </div>
           )}
