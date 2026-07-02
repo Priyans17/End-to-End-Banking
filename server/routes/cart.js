@@ -60,6 +60,7 @@ router.delete('/remove/:productId', auth, async (req, res) => {
     if (!cart) return res.status(404).json({ message: 'Cart not found' })
     cart.items = cart.items.filter(i => i.product.toString() !== req.params.productId)
     await cart.save()
+    await cart.populate('items.product', 'name images price stock')
     res.json({ message: 'Item removed', cart })
   } catch (err) { res.status(500).json({ message: err.message }) }
 })
