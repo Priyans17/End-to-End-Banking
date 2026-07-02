@@ -37,15 +37,15 @@ export default function Overview() {
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: '#111827', marginBottom: 2 }}>
-          Welcome back, {user?.name?.split(' ')[0] || 'User'}
+        <h1 data-testid="welcome-heading" id="welcome-heading" style={{ fontSize: 22, fontWeight: 700, color: '#111827', marginBottom: 2 }}>
+          Welcome back, <span data-testid="user-first-name">{user?.name?.split(' ')[0] || 'User'}</span>
         </h1>
         <p style={{ color: '#6b7280', fontSize: 14 }}>Here is your financial overview</p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
-        <StatCard title="Account Balance" value={loading ? '...' : fmt(summary?.savingsBalance || 250000)} subtitle="Primary account" icon={Landmark} color="#1e3a8a" trend={2.4} />
-        <StatCard title="Portfolio Value" value={loading ? '...' : fmt(summary?.portfolioValue || 1012000)} subtitle="Investments" icon={TrendingUp} color="#6366f1" trend={5.8} />
+        <StatCard data-testid="stat-account-balance" title="Account Balance" value={loading ? '...' : fmt(summary?.savingsBalance || 250000)} subtitle="Primary account" icon={Landmark} color="#1e3a8a" trend={2.4} />
+        <StatCard data-testid="stat-portfolio-value" title="Portfolio Value" value={loading ? '...' : fmt(summary?.portfolioValue || 1012000)} subtitle="Investments" icon={TrendingUp} color="#6366f1" trend={5.8} />
         <StatCard title="Funds Invested" value={loading ? '...' : fmt(summary?.mfInvested || 340000)} subtitle="Active plans" icon={PieChart} color="#10b981" trend={3.2} />
         <StatCard title="Insurance Cover" value={loading ? '...' : fmt(summary?.insuranceCover || 2000000)} subtitle="Total coverage" icon={Shield} color="#f59e0b" />
       </div>

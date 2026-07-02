@@ -195,21 +195,21 @@ export default function Checkout() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
                   <div>
                     <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>Full Name</label>
-                    <input placeholder="e.g. John Smith" value={address.name} onChange={e => setAddress({...address, name: e.target.value})} style={inp} />
+                    <input id="checkout-name" data-testid="checkout-name-input" aria-label="Full Name" placeholder="e.g. John Smith" value={address.name} onChange={e => setAddress({...address, name: e.target.value})} style={inp} />
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>Phone</label>
-                    <input placeholder="e.g. +1 555 000 0000" value={address.phone} onChange={e => setAddress({...address, phone: e.target.value})} style={inp} />
+                    <input id="checkout-phone" data-testid="checkout-phone-input" aria-label="Phone Number" placeholder="e.g. +1 555 000 0000" value={address.phone} onChange={e => setAddress({...address, phone: e.target.value})} style={inp} />
                   </div>
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>Street Address</label>
-                  <input placeholder="e.g. 123 Main Street" value={address.line1} onChange={e => setAddress({...address, line1: e.target.value})} style={inp} />
+                  <input id="checkout-address" data-testid="checkout-address-input" aria-label="Street Address" placeholder="e.g. 123 Main Street" value={address.line1} onChange={e => setAddress({...address, line1: e.target.value})} style={inp} />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
                   <div>
                     <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>City</label>
-                    <input placeholder="e.g. New York" value={address.city} onChange={e => setAddress({...address, city: e.target.value})} style={inp} />
+                    <input id="checkout-city" data-testid="checkout-city-input" aria-label="City" placeholder="e.g. New York" value={address.city} onChange={e => setAddress({...address, city: e.target.value})} style={inp} />
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>State</label>
@@ -217,7 +217,7 @@ export default function Checkout() {
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>ZIP Code</label>
-                    <input placeholder="e.g. 10001" maxLength={10} value={address.zip} onChange={e => setAddress({...address, zip: e.target.value})} style={inp} />
+                    <input id="checkout-zip" data-testid="checkout-zip-input" aria-label="ZIP Code" placeholder="e.g. 10001" maxLength={10} value={address.zip} onChange={e => setAddress({...address, zip: e.target.value})} style={inp} />
                   </div>
                 </div>
                 <div>

@@ -65,11 +65,11 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>Full Name</label>
-              <input type="text" required placeholder="John Smith" value={form.name} onChange={e => setForm({...form, name: e.target.value})} style={inp} />
+              <input id="register-name" data-testid="register-name-input" aria-label="Full Name" type="text" required placeholder="John Smith" value={form.name} onChange={e => setForm({...form, name: e.target.value})} style={inp} />
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>Email Address</label>
-              <input type="email" required placeholder="john@example.com" value={form.email} onChange={e => setForm({...form, email: e.target.value})} style={inp} />
+              <input id="register-email" data-testid="register-email-input" aria-label="Email Address" type="email" required placeholder="john@example.com" value={form.email} onChange={e => setForm({...form, email: e.target.value})} style={inp} />
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>Phone <span style={{ color: '#9ca3af', fontWeight: 400 }}>(optional)</span></label>
@@ -78,19 +78,19 @@ export default function RegisterPage() {
                   style={{ padding: '10px 8px', borderRadius: 6, border: '1px solid #d1d5db', fontSize: 13, fontFamily: 'Urbanist,sans-serif', outline: 'none', background: 'white', color: '#111827', minWidth: 100 }}>
                   {COUNTRY_CODES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
                 </select>
-                <input type="tel" placeholder="Digits only" value={form.phone} onChange={e => setForm({...form, phone: e.target.value.replace(/\D/g,'')})} style={{...inp, flex:1}} />
+                <input id="register-phone" data-testid="register-phone-input" aria-label="Phone Number" type="tel" placeholder="Digits only" value={form.phone} onChange={e => setForm({...form, phone: e.target.value.replace(/\D/g,'')})} style={{...inp, flex:1}} />
               </div>
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>Password</label>
               <div style={{ position: 'relative' }}>
-                <input type={showPwd ? 'text' : 'password'} required placeholder="Minimum 8 characters" value={form.password} onChange={e => setForm({...form, password: e.target.value})} style={{...inp, paddingRight: 40}} />
+                <input id="register-password" data-testid="register-password-input" aria-label="Password" type={showPwd ? 'text' : 'password'} required placeholder="Minimum 8 characters" value={form.password} onChange={e => setForm({...form, password: e.target.value})} style={{...inp, paddingRight: 40}} />
                 <button type="button" onClick={() => setShowPwd(!showPwd)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af' }}>
                   {showPwd ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
               </div>
             </div>
-            <button type="submit" disabled={loading} style={{ padding: '11px', background: '#1e3a8a', color: 'white', border: 'none', borderRadius: 6, fontSize: 14, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Urbanist,sans-serif', opacity: loading ? 0.7 : 1, marginTop: 4 }}>
+            <button type="submit" id="register-submit" data-testid="register-submit-btn" aria-label="Create Account" disabled={loading} style={{ padding: '11px', background: '#1e3a8a', color: 'white', border: 'none', borderRadius: 6, fontSize: 14, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Urbanist,sans-serif', opacity: loading ? 0.7 : 1, marginTop: 4 }}>
               {loading ? 'Creating account...' : 'Create Account'}
             </button>
           </form>

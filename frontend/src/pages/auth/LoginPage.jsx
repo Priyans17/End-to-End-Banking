@@ -48,7 +48,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>Email Address</label>
-              <input type="email" required placeholder="john@example.com" value={form.email} onChange={e => setForm({...form, email: e.target.value})} style={inp} />
+              <input id="login-email" data-testid="login-email-input" aria-label="Email Address" type="email" required placeholder="john@example.com" value={form.email} onChange={e => setForm({...form, email: e.target.value})} style={inp} />
             </div>
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
@@ -56,13 +56,13 @@ export default function LoginPage() {
                 <a href="#" style={{ fontSize: 12, color: '#1e3a8a', textDecoration: 'none' }}>Forgot password?</a>
               </div>
               <div style={{ position: 'relative' }}>
-                <input type={showPwd ? 'text' : 'password'} required placeholder="Enter your password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} style={{...inp, paddingRight: 40}} />
+                <input id="login-password" data-testid="login-password-input" aria-label="Password" type={showPwd ? 'text' : 'password'} required placeholder="Enter your password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} style={{...inp, paddingRight: 40}} />
                 <button type="button" onClick={() => setShowPwd(!showPwd)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af' }}>
                   {showPwd ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
               </div>
             </div>
-            <button type="submit" disabled={loading} style={{ padding: '11px', background: '#1e3a8a', color: 'white', border: 'none', borderRadius: 6, fontSize: 14, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Urbanist,sans-serif', opacity: loading ? 0.7 : 1, marginTop: 4 }}>
+            <button type="submit" id="login-submit" data-testid="login-submit-btn" aria-label="Sign In" disabled={loading} style={{ padding: '11px', background: '#1e3a8a', color: 'white', border: 'none', borderRadius: 6, fontSize: 14, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Urbanist,sans-serif', opacity: loading ? 0.7 : 1, marginTop: 4 }}>
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>

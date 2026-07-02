@@ -183,7 +183,7 @@ export default function CartPage() {
                   value={coupon}
                   onChange={e => setCoupon(e.target.value.toUpperCase())}
                   onKeyDown={e => e.key === 'Enter' && applyCoupon()}
-                  placeholder="Enter coupon code"
+                  id="coupon-input" data-testid="coupon-code-input" aria-label="Coupon Code" placeholder="Enter coupon code"
                   style={{ width: '100%', padding: '9px 10px 9px 30px', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: 13, fontFamily: 'Urbanist,sans-serif', outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
@@ -210,7 +210,7 @@ export default function CartPage() {
               <span style={{ fontSize: 20, fontWeight: 800, color: '#1e3a8a' }}>{fmt(total)}</span>
             </div>
 
-            <button onClick={() => navigate('/dashboard/checkout')} style={{ width: '100%', padding: '14px', background: 'linear-gradient(135deg,#1e3a8a,#6366f1)', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'Urbanist,sans-serif', marginBottom: 12 }}>
+            <button data-testid="proceed-to-checkout-btn" aria-label="Proceed to Checkout" onClick={() => navigate('/dashboard/checkout')} style={{ width: '100%', padding: '14px', background: 'linear-gradient(135deg,#1e3a8a,#6366f1)', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'Urbanist,sans-serif', marginBottom: 12 }}>
               Proceed to Checkout
             </button>
             <Link to="/dashboard/shop" style={{ display: 'block', textAlign: 'center', fontSize: 14, color: '#6366f1', textDecoration: 'none', fontWeight: 600 }}>

@@ -120,7 +120,7 @@ export default function DashboardLayout() {
 
         <nav style={{ flex: 1, padding: '10px 6px', display: 'flex', flexDirection: 'column', gap: 2, overflowY: 'auto' }}>
           {navItems.map(({ to, icon: Icon, label, end }) => (
-            <NavLink key={to} to={to} end={end} style={({ isActive }) => ({
+            <NavLink key={to} to={to} end={end} data-testid={`nav-${label.toLowerCase()}`} aria-label={label} style={({ isActive }) => ({
               display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px',
               borderRadius: 6, textDecoration: 'none', transition: 'background 0.15s',
               background: isActive ? '#1e3a8a' : 'transparent',
@@ -148,10 +148,10 @@ export default function DashboardLayout() {
 
           {/* Notifications Bell */}
           <div ref={notifRef} style={{ position: 'relative' }}>
-            <button onClick={() => { setNotifOpen(!notifOpen); setUserMenuOpen(false) }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#6b7280', position: 'relative', display: 'flex', alignItems: 'center', padding: 4 }}>
+            <button id="notifications-bell" data-testid="notifications-bell-btn" aria-label="Notifications" onClick={() => { setNotifOpen(!notifOpen); setUserMenuOpen(false) }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#6b7280', position: 'relative', display: 'flex', alignItems: 'center', padding: 4 }}>
               <Bell size={18} />
               {unreadCount > 0 && (
-                <span style={{ position: 'absolute', top: -2, right: -2, width: 16, height: 16, background: '#dc2626', borderRadius: '50%', fontSize: 10, fontWeight: 700, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Urbanist,sans-serif' }}>
+                <span data-testid="notification-unread-count" aria-label="Unread notifications" style={{ position: 'absolute', top: -2, right: -2, width: 16, height: 16, background: '#dc2626', borderRadius: '50%', fontSize: 10, fontWeight: 700, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Urbanist,sans-serif' }}>
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}

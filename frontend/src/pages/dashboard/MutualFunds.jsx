@@ -89,7 +89,7 @@ export default function MutualFunds() {
               <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: 200, position: 'relative' }}>
                   <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search funds..."
+                  <input id="fund-search" data-testid="fund-search-input" aria-label="Search mutual funds" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search funds..."
                     style={{ width: '100%', padding: '10px 12px 10px 36px', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: 14, fontFamily: 'Urbanist,sans-serif', outline: 'none' }} />
                 </div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>

@@ -96,7 +96,7 @@ export default function Shop() {
         <div style={{ flex: 1, minWidth: 180, position: 'relative' }}>
           <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
           <input value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && fetchProducts()}
-            placeholder="Search products..." style={{ width: '100%', padding: '9px 10px 9px 30px', borderRadius: 6, border: '1px solid #d1d5db', fontSize: 13, fontFamily: 'Urbanist,sans-serif', outline: 'none' }} />
+            id="shop-search" data-testid="shop-search-input" aria-label="Search products" placeholder="Search products..." style={{ width: '100%', padding: '9px 10px 9px 30px', borderRadius: 6, border: '1px solid #d1d5db', fontSize: 13, fontFamily: 'Urbanist,sans-serif', outline: 'none' }} />
         </div>
         <select value={sort} onChange={e => setSort(e.target.value)} style={{ padding: '9px 12px', borderRadius: 6, border: '1px solid #d1d5db', fontSize: 13, fontFamily: 'Urbanist,sans-serif', outline: 'none', background: 'white' }}>
           <option value="newest">Neweste</option>
@@ -140,7 +140,7 @@ export default function Shop() {
                   <span style={{ fontSize: 16, fontWeight: 700, color: '#111827' }}>{fmt(product.price)}</span>
                   {product.originalPrice > product.price && <span style={{ fontSize: 12, color: '#9ca3af', textDecoration: 'line-through' }}>{fmt(product.originalPrice)}</span>}
                 </div>
-                <button onClick={() => addToCart(product._id)} style={{ width: '100%', padding: '9px', background: '#1e3a8a', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 600, fontFamily: 'Urbanist,sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                <button onClick={() => addToCart(product._id)} data-testid={`add-to-cart-${product._id}`} aria-label={`Add ${product.name} to cart`} style={{ width: '100%', padding: '9px', background: '#1e3a8a', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 600, fontFamily: 'Urbanist,sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                   <ShoppingCart size={12} /> Add to Cart
                 </button>
               </div>
