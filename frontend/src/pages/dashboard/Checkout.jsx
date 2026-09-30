@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { CheckCircle, CreditCard, Lock } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { CheckCircle, CreditCard, Lock, Upload, X, FileImage, QrCode, Camera } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { loadStripe } from '@stripe/stripe-js'
@@ -22,6 +22,217 @@ const CARD_STYLE = {
     },
     invalid: { color: '#dc2626', iconColor: '#dc2626' }
   }
+}
+
+function ReceiptUpload() {
+  const [receipt, setReceipt] = useState(null)
+  const [preview, setPreview] = useState(null)
+  const fileRef = useRef()
+
+  const handleFile = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']
+    if (!allowed.includes(file.type)) {
+      toast.error('Only JPG, PNG, WEBP, or PDF files are allowed')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File must be under 5 MB')
+      return
+    }
+    setReceipt(file)
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader()
+      reader.onload = (ev) => setPreview(ev.target.result)
+      reader.readAsDataURL(file)
+    } else {
+      setPreview(null)
+    }
+  }
+
+  const handleRemove = () => {
+    setReceipt(null)
+    setPreview(null)
+    if (fileRef.current) fileRef.current.value = ''
+  }
+
+  return (
+    <div style={{ marginTop: 24, borderTop: '1.5px solid #f1f5f9', paddingTop: 20 }}>
+      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 8 }}>
+        Upload Payment Receipt <span style={{ color: '#94a3b8', fontWeight: 400 }}>(optional)</span>
+      </label>
+
+      {!receipt ? (
+        <div
+          onClick={() => fileRef.current?.click()}
+          style={{
+            border: '2px dashed #cbd5e1',
+            borderRadius: 10,
+            padding: '24px 16px',
+            textAlign: 'center',
+            cursor: 'pointer',
+            background: '#f8fafc',
+            transition: 'border-color 0.2s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.borderColor = '#6366f1'}
+          onMouseLeave={e => e.currentTarget.style.borderColor = '#cbd5e1'}
+        >
+          <Upload size={28} color="#6366f1" style={{ marginBottom: 8 }} />
+          <p style={{ fontSize: 13, color: '#64748b', margin: 0 }}>Click to upload receipt</p>
+          <p style={{ fontSize: 11, color: '#94a3b8', margin: '4px 0 0' }}>JPG, PNG, WEBP or PDF · Max 5 MB</p>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,application/pdf"
+            style={{ display: 'none' }}
+            onChange={handleFile}
+            data-testid="receipt-upload-input"
+          />
+        </div>
+      ) : (
+        <div style={{ border: '1.5px solid #e2e8f0', borderRadius: 10, padding: 14, background: '#f8fafc', display: 'flex', alignItems: 'center', gap: 12 }}>
+          {preview ? (
+            <img src={preview} alt="Receipt preview" style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 8, border: '1px solid #e2e8f0' }} />
+          ) : (
+            <div style={{ width: 56, height: 56, background: '#e0e7ff', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <FileImage size={24} color="#6366f1" />
+            </div>
+          )}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{receipt.name}</p>
+            <p style={{ fontSize: 11, color: '#94a3b8', margin: '2px 0 0' }}>{(receipt.size / 1024).toFixed(1)} KB</p>
+          </div>
+          <button
+            type="button"
+            onClick={handleRemove}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#94a3b8' }}
+            aria-label="Remove receipt"
+            data-testid="receipt-remove-btn"
+          >
+            <X size={18} />
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ScanQR({ total }) {
+  const [scanning, setScanning] = useState(false)
+  const [scanned, setScanned] = useState(null)
+  const videoRef = useRef()
+  const streamRef = useRef()
+
+  const startScan = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      streamRef.current = stream
+      setScanning(true)
+      setTimeout(() => {
+        if (videoRef.current) videoRef.current.srcObject = stream
+      }, 100)
+    } catch {
+      toast.error('Camera access denied or not available')
+    }
+  }
+
+  const stopScan = () => {
+    streamRef.current?.getTracks().forEach(t => t.stop())
+    setScanning(false)
+  }
+
+  const simulateScan = () => {
+    stopScan()
+    setScanned('UPI://pay?pa=merchant@bank&pn=AuraStore&am=' + total.toFixed(2) + '&cu=USD')
+    toast.success('QR scanned successfully!')
+  }
+
+  useEffect(() => () => streamRef.current?.getTracks().forEach(t => t.stop()), [])
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ padding: '14px 16px', background: '#eff6ff', borderRadius: 10, border: '1px solid #bfdbfe', fontSize: 13, color: '#1e40af' }}>
+        <strong>Amount to pay:</strong> {fmt(total)} — scan the merchant QR code with your payment app.
+      </div>
+
+      {!scanning && !scanned && (
+        <div
+          style={{ border: '2px dashed #cbd5e1', borderRadius: 12, padding: '36px 16px', textAlign: 'center', background: '#f8fafc', cursor: 'pointer' }}
+          onClick={startScan}
+          data-testid="qr-scan-zone"
+        >
+          <QrCode size={48} color="#6366f1" style={{ marginBottom: 12 }} />
+          <p style={{ fontSize: 14, fontWeight: 600, color: '#374151', margin: 0 }}>Tap to scan QR code</p>
+          <p style={{ fontSize: 12, color: '#94a3b8', margin: '4px 0 0' }}>Opens your device camera</p>
+        </div>
+      )}
+
+      {scanning && (
+        <div style={{ position: 'relative', borderRadius: 12, overflow: 'hidden', background: '#000' }}>
+          <video ref={videoRef} autoPlay playsInline style={{ width: '100%', display: 'block', borderRadius: 12 }} />
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+            <div style={{ width: 180, height: 180, border: '3px solid #6366f1', borderRadius: 12, boxShadow: '0 0 0 9999px rgba(0,0,0,0.45)' }} />
+          </div>
+          <div style={{ position: 'absolute', bottom: 12, left: 0, right: 0, display: 'flex', gap: 10, justifyContent: 'center' }}>
+            <button type="button" onClick={simulateScan} style={{ padding: '9px 20px', background: '#6366f1', color: 'white', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Urbanist,sans-serif' }}>
+              <Camera size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />Simulate Scan
+            </button>
+            <button type="button" onClick={stopScan} style={{ padding: '9px 20px', background: 'white', color: '#374151', border: '1.5px solid #e2e8f0', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Urbanist,sans-serif' }}>Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {scanned && (
+        <div style={{ border: '1.5px solid #bbf7d0', borderRadius: 10, padding: 14, background: '#f0fdf4' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <CheckCircle size={16} color="#16a34a" />
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#15803d' }}>QR Scanned</span>
+          </div>
+          <p style={{ fontSize: 11, color: '#64748b', margin: 0, wordBreak: 'break-all' }}>{scanned}</p>
+          <button type="button" onClick={() => { setScanned(null) }} style={{ marginTop: 10, fontSize: 12, color: '#6366f1', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'Urbanist,sans-serif' }}>Scan again</button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function PaymentTabs({ clientSecret, total, onSuccess, onBack }) {
+  const [tab, setTab] = useState('card')
+  const tabs = [
+    { id: 'card', label: 'Card', icon: <CreditCard size={14} /> },
+    { id: 'qr',   label: 'Scan QR', icon: <QrCode size={14} /> },
+    { id: 'receipt', label: 'Receipt', icon: <Upload size={14} /> },
+  ]
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+        {tabs.map(t => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setTab(t.id)}
+            data-testid={`payment-tab-${t.id}`}
+            style={{
+              flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              padding: '9px 12px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer',
+              fontFamily: 'Urbanist,sans-serif', transition: 'all 0.15s',
+              background: tab === t.id ? '#1e3a8a' : 'white',
+              color: tab === t.id ? 'white' : '#64748b',
+              border: tab === t.id ? '1.5px solid #1e3a8a' : '1.5px solid #e2e8f0',
+            }}
+          >{t.icon}{t.label}</button>
+        ))}
+      </div>
+      {tab === 'card' && (
+        <Elements stripe={stripePromise}>
+          <StripeCardForm clientSecret={clientSecret} total={total} onSuccess={onSuccess} onBack={onBack} />
+        </Elements>
+      )}
+      {tab === 'qr' && <ScanQR total={total} />}
+      {tab === 'receipt' && <ReceiptUpload />}
+    </div>
+  )
 }
 
 function StripeCardForm({ clientSecret, total, onSuccess, onBack }) {
@@ -223,13 +434,7 @@ export default function Checkout() {
           )}
 
           {step === 2 && clientSecret && (
-            <div>
-              <h3 style={{ fontSize: 17, fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>Card Payment</h3>
-              <p style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>Enter your card details to complete the purchase.</p>
-              <Elements stripe={stripePromise}>
-                <StripeCardForm clientSecret={clientSecret} total={total} onSuccess={handlePaymentSuccess} onBack={() => { setStep(1); setClientSecret(null) }} />
-              </Elements>
-            </div>
+            <PaymentTabs clientSecret={clientSecret} total={total} onSuccess={handlePaymentSuccess} onBack={() => { setStep(1); setClientSecret(null) }} />
           )}
         </div>
 
