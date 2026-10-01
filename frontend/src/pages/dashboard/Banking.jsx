@@ -23,7 +23,6 @@ export default function Banking() {
   const [search, setSearch] = useState('')
   const [hideBalance, setHideBalance] = useState(false)
   const [filterType, setFilterType] = useState('all')
-  const [showAllTx, setShowAllTx] = useState(false)
   const token = localStorage.getItem('aura_token')
 
   const fetchAll = useCallback(async (silent = false) => {
@@ -155,52 +154,35 @@ export default function Banking() {
                     <button key={f} onClick={() => setFilterType(f)} style={{ padding: '8px 14px', borderRadius: 6, border: '1px solid ' + (filterType === f ? '#1e3a8a' : '#e5e7eb'), background: filterType === f ? '#1e3a8a' : 'white', color: filterType === f ? 'white' : '#6b7280', cursor: 'pointer', fontSize: 12, fontWeight: 600, fontFamily: 'Urbanist,sans-serif', textTransform: 'capitalize' }}>{f}</button>
                   ))}
                 </div>
-                <button onClick={() => {
-                  if (!filtered.length) return toast.error('No transactions to export')
-                  const rows = [['Date','Description','Mode','Type','Amount','Balance']]
-                  filtered.forEach(tx => rows.push([new Date(tx.date).toLocaleString('en-US'), '"'+(tx.description||'').replace(/"/g,'""')+'"', tx.mode||'', tx.type||'', tx.amount, tx.balance]))
-                  const csv = rows.map(r => r.join(',')).join('\n')
-                  const blob = new Blob([csv], { type: 'text/csv' })
-                  const url = URL.createObjectURL(blob)
-                  const a = document.createElement('a'); a.href = url; a.download = 'transactions_' + new Date().toISOString().slice(0,10) + '.csv'; a.click(); URL.revokeObjectURL(url)
-                  toast.success('Exported ' + filtered.length + ' transactions')
-                }} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '9px 14px', borderRadius: 6, border: '1px solid #d1d5db', background: 'white', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#374151', fontFamily: 'Urbanist,sans-serif' }}>
+                <button style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '9px 14px', borderRadius: 6, border: '1px solid #d1d5db', background: 'white', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#374151', fontFamily: 'Urbanist,sans-serif' }}>
                   <Download size={13} /> Export
                 </button>
               </div>
               {loading ? <div style={{ textAlign: 'center', padding: 40, color: '#9ca3af' }}>Loading...</div> :
                 filtered.length === 0 ? <div style={{ textAlign: 'center', padding: 40, color: '#9ca3af' }}>No transactions found</div> : (
-                  <div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                      {(showAllTx ? filtered : filtered.slice(0, 5)).map((tx, i) => (
-                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 8px', borderBottom: '1px solid #f9fafb', borderRadius: 6, transition: 'background 0.15s' }}
-                          onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
-                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                          <div style={{ width: 38, height: 38, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: tx.type === 'credit' ? '#f0fdf4' : '#fef2f2', flexShrink: 0 }}>
-                            {tx.type === 'credit' ? <ArrowDownRight size={17} color="#16a34a" /> : <ArrowUpRight size={17} color="#dc2626" />}
-                          </div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tx.description}</div>
-                            <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>
-                              <span style={{ background: '#f3f4f6', padding: '1px 6px', borderRadius: 4, marginRight: 6, fontWeight: 600 }}>{tx.mode}</span>
-                              {new Date(tx.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })} · {new Date(tx.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                            </div>
-                          </div>
-                          <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                            <div style={{ fontSize: 14, fontWeight: 700, color: tx.type === 'credit' ? '#16a34a' : '#dc2626' }}>
-                              {tx.type === 'credit' ? '+' : '-'}{fmt(tx.amount)}
-                            </div>
-                            <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>Bal: {fmt(tx.balance)}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {filtered.map((tx, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 8px', borderBottom: '1px solid #f9fafb', borderRadius: 6, transition: 'background 0.15s' }}
+                        onMouseEnter={e => e.currentTarget.style.background = '#f9fafb'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                        <div style={{ width: 38, height: 38, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: tx.type === 'credit' ? '#f0fdf4' : '#fef2f2', flexShrink: 0 }}>
+                          {tx.type === 'credit' ? <ArrowDownRight size={17} color="#16a34a" /> : <ArrowUpRight size={17} color="#dc2626" />}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tx.description}</div>
+                          <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>
+                            <span style={{ background: '#f3f4f6', padding: '1px 6px', borderRadius: 4, marginRight: 6, fontWeight: 600 }}>{tx.mode}</span>
+                            {new Date(tx.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })} · {new Date(tx.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                           </div>
                         </div>
-                      ))}
-                    </div>
-                    {filtered.length > 5 && (
-                      <button onClick={() => setShowAllTx(!showAllTx)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '12px auto 0', padding: '8px 20px', borderRadius: 20, border: '1px solid #e5e7eb', background: 'white', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#1e3a8a', fontFamily: 'Urbanist,sans-serif' }}>
-                        {showAllTx ? '▲ Show less' : '••• View all ' + filtered.length + ' transactions'}
-                      </button>
-                    )}
+                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: tx.type === 'credit' ? '#16a34a' : '#dc2626' }}>
+                            {tx.type === 'credit' ? '+' : '-'}{fmt(tx.amount)}
+                          </div>
+                          <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>Bal: {fmt(tx.balance)}</div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
             </div>
@@ -218,15 +200,8 @@ export default function Banking() {
 }
 
 function TransferForm({ token, accounts, onSuccess }) {
-  const [form, setForm] = useState({ fromAccount: accounts[0]?._id || '', toAccount: '', amount: '', mode: 'SWIFT', remarks: '' })
+  const [form, setForm] = useState({ fromAccount: '', toAccount: '', amount: '', mode: 'SWIFT', remarks: '' })
   const [loading, setLoading] = useState(false)
-
-  // Auto-select first account whenever accounts list changes
-  useEffect(() => {
-    if (accounts.length > 0) {
-      setForm(f => ({ ...f, fromAccount: f.fromAccount || accounts[0]._id }))
-    }
-  }, [accounts])
 
   const handleTransfer = async (e) => {
     e.preventDefault()
@@ -253,21 +228,11 @@ function TransferForm({ token, accounts, onSuccess }) {
       <form onSubmit={handleTransfer} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         <div>
           <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>From Account</label>
-          {accounts.length === 0 ? (
-            <div style={{ padding: '12px 14px', borderRadius: 6, border: '1px solid #fde68a', background: '#fefce8', fontSize: 13, color: '#92400e' }}>
-              No accounts found. Please log out and log back in to auto-create your account.
-            </div>
-          ) : accounts.length === 1 ? (
-            <div style={{ padding: '12px 14px', borderRadius: 6, border: '1px solid #d1d5db', background: '#f9fafb', fontSize: 13, color: '#111827', fontWeight: 600 }}>
-              {selectedAcc?.type?.replace('_',' ')} — ****{selectedAcc?.accountNumber?.slice(-4)}
-              <span style={{ float: 'right', color: '#16a34a' }}>{new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(selectedAcc?.balance || 0)}</span>
-            </div>
-          ) : (
-            <select id='from-account' data-testid='from-account-select' aria-label='From Account' value={form.fromAccount} onChange={e => setForm({...form, fromAccount: e.target.value})} required style={inp}>
-              {accounts.map(a => <option key={a._id} value={a._id}>{a.type.replace('_',' ')} — ****{a.accountNumber?.slice(-4)} · {new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(a.balance)}</option>)}
-            </select>
-          )}
-          {selectedAcc && accounts.length > 1 && <div style={hint}>Available: {new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(selectedAcc.balance)}</div>}
+          <select id='from-account' data-testid='from-account-select' aria-label='From Account' value={form.fromAccount} onChange={e => setForm({...form, fromAccount: e.target.value})} required style={inp}>
+            <option value="">Select account</option>
+            {accounts.map(a => <option key={a._id} value={a._id}>{a.type.replace('_',' ')} — ****{a.accountNumber?.slice(-4)} · {new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(a.balance)}</option>)}
+          </select>
+          {selectedAcc && <div style={hint}>Available: {new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(selectedAcc.balance)}</div>}
         </div>
         <div>
           <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>To Account / IBAN</label>
