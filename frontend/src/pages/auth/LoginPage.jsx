@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' })
+  const fillDemo = () => setForm({ email: 'demo@mail.com', password: 'abcd@1234' })
   const [showPwd, setShowPwd] = useState(false)
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
@@ -66,7 +67,14 @@ export default function LoginPage() {
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
-          <p style={{ textAlign: 'center', marginTop: 18, fontSize: 13, color: '#6b7280' }}>
+          <button
+            type="button"
+            onClick={fillDemo}
+            style={{ display: 'block', width: '100%', marginTop: 12, padding: '9px', borderRadius: 6, border: '1.5px dashed #bae6fd', background: '#f0f9ff', color: '#0369a1', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Urbanist,sans-serif' }}
+          >
+            Use Demo Account
+          </button>
+          <p style={{ textAlign: 'center', marginTop: 14, fontSize: 13, color: '#6b7280' }}>
             No account?{' '}<Link to="/register" style={{ color: '#1e3a8a', fontWeight: 600, textDecoration: 'none' }}>Create one</Link>
           </p>
         </div>

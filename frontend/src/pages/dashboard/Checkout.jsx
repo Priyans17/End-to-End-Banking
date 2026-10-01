@@ -6,7 +6,12 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 
 const STRIPE_PK = import.meta.env.VITE_STRIPE_PK || 'pk_test_51TkAoS21YKdjh046zUw3HUsIg3oy7t7tA18wDB80j4P1ydvwgyUdPdZyoMy6Uj449LFT1TnYmBSzgD4lQOdwW8PV00QgKTo1Ul'
-const stripePromise = loadStripe(STRIPE_PK)
+// Lazy — only load Stripe when the card payment tab is actually rendered
+let stripePromise = null
+const getStripePromise = () => {
+  if (!stripePromise) stripePromise = loadStripe(STRIPE_PK)
+  return stripePromise
+}
 
 const fmt = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(n || 0)
 const inp = { width: '100%', padding: '11px 14px', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: 14, fontFamily: 'Urbanist,sans-serif', outline: 'none', boxSizing: 'border-box' }
@@ -225,7 +230,7 @@ function PaymentTabs({ clientSecret, total, onSuccess, onBack }) {
         ))}
       </div>
       {tab === 'card' && (
-        <Elements stripe={stripePromise}>
+        <Elements stripe={getStripePromise()}>
           <StripeCardForm clientSecret={clientSecret} total={total} onSuccess={onSuccess} onBack={onBack} />
         </Elements>
       )}
@@ -386,7 +391,7 @@ export default function Checkout() {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 24, alignItems: 'start' }}>
+      <div className="two-col-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 24, alignItems: 'start' }}>
         <div style={{ background: 'white', borderRadius: 16, border: '1.5px solid #f1f5f9', padding: 28 }}>
           {step === 1 && (
             <div>

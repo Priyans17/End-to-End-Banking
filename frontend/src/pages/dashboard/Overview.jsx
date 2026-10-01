@@ -50,7 +50,7 @@ export default function Overview() {
         <StatCard title="Insurance Cover" value={loading ? '...' : fmt(summary?.insuranceCover || 2000000)} subtitle="Total coverage" icon={Shield} color="#f59e0b" />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 20, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, marginBottom: 20 }}>
         <div style={{ background: 'white', borderRadius: 10, padding: 20, border: '1px solid #e5e7eb' }}>
           <h3 style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 16 }}>Portfolio Performance</h3>
           <ResponsiveContainer width="100%" height={200}>
@@ -110,7 +110,7 @@ export default function Overview() {
             { label: 'Invest', icon: PieChart, color: '#f59e0b', href: '/dashboard/mutual-funds' },
             { label: 'Wallet', icon: Wallet, color: '#8b5cf6', href: '/dashboard/banking' },
           ].map(({ label, icon: Icon, color, href }) => (
-            <Link key={label} to={href} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '14px 20px', borderRadius: 8, border: '1px solid #f3f4f6', textDecoration: 'none', background: '#fafafa', minWidth: 90 }}
+            <Link key={label} to={href} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '14px 0', borderRadius: 8, border: '1px solid #f3f4f6', textDecoration: 'none', background: '#fafafa', flex: 1, minWidth: 70, maxWidth: 120 }}
               onMouseEnter={e => { e.currentTarget.style.background = color + '10'; e.currentTarget.style.borderColor = color + '40' }}
               onMouseLeave={e => { e.currentTarget.style.background = '#fafafa'; e.currentTarget.style.borderColor = '#f3f4f6' }}>
               <div style={{ width: 36, height: 36, background: color + '15', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
