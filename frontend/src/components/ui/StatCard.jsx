@@ -1,8 +1,8 @@
 export default function StatCard({ title, value, subtitle, icon: Icon, color = '#1e3a8a', trend, ...rest }) {
   return (
-    <div {...rest} style={{
+    <div {...rest} className="stat-card" style={{
       background: 'white', borderRadius: 16, padding: 24,
-      border: '1.5px solid #f1f5f9', boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+      border: '1px solid #e5e7eb', boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
       display: 'flex', flexDirection: 'column', gap: 12
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -13,7 +13,7 @@ export default function StatCard({ title, value, subtitle, icon: Icon, color = '
           </div>
         )}
       </div>
-      <div style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px' }}>{value}</div>
+      <div className="stat-card-value" style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px' }}>{value}</div>
       {(subtitle || trend) && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {trend && (

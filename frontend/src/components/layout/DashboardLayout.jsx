@@ -38,6 +38,7 @@ const timeAgo = (date) => {
 
 export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
   const [notifications, setNotifications] = useState([])
@@ -60,7 +61,7 @@ export default function DashboardLayout() {
 
   useEffect(() => {
     fetchNotifications()
-    const interval = setInterval(fetchNotifications, 30000)
+    const interval = setInterval(fetchNotifications, 60000)
     return () => clearInterval(interval)
   }, [])
 
@@ -102,8 +103,17 @@ export default function DashboardLayout() {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#f3f4f6' }}>
+      {/* Mobile overlay backdrop */}
+      <div
+        className="sidebar-overlay"
+        onClick={() => setMobileSidebarOpen(false)}
+        style={{ display: 'none', position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 199 }}
+      />
+
       {/* Sidebar */}
-      <aside style={{ width: sidebarOpen ? 220 : 56, minHeight: '100vh', background: '#111827', transition: 'width 0.2s ease', display: 'flex', flexDirection: 'column', overflow: 'hidden', flexShrink: 0, position: 'sticky', top: 0, height: '100vh' }}>
+      <aside
+        className={`dashboard-sidebar${mobileSidebarOpen ? ' open' : ''}`}
+        style={{ width: sidebarOpen ? 220 : 56, minHeight: '100vh', background: '#111827', transition: 'width 0.2s ease', display: 'flex', flexDirection: 'column', overflow: 'hidden', flexShrink: 0, position: 'sticky', top: 0, height: '100vh' }}>
         <div style={{ padding: '16px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1f2937', minHeight: 56 }}>
           {sidebarOpen && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -118,9 +128,9 @@ export default function DashboardLayout() {
           </button>
         </div>
 
-        <nav style={{ flex: 1, padding: '10px 6px', display: 'flex', flexDirection: 'column', gap: 2, overflowY: 'auto' }}>
+        <nav style={{ flex: 1, padding: '10px 6px', display: 'flex', flexDirection: 'column', gap: 2, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
           {navItems.map(({ to, icon: Icon, label, end }) => (
-            <NavLink key={to} to={to} end={end} data-testid={`nav-${label.toLowerCase()}`} aria-label={label} style={({ isActive }) => ({
+            <NavLink key={to} to={to} end={end} data-testid={`nav-${label.toLowerCase()}`} aria-label={label} onClick={() => setMobileSidebarOpen(false)} style={({ isActive }) => ({
               display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px',
               borderRadius: 6, textDecoration: 'none', transition: 'background 0.15s',
               background: isActive ? '#1e3a8a' : 'transparent',
@@ -142,9 +152,21 @@ export default function DashboardLayout() {
       </aside>
 
       {/* Main content */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}>
+      <div className="dashboard-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}>
         {/* Top bar */}
-        <header style={{ height: 56, background: 'white', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '0 20px', gap: 12, flexShrink: 0, position: 'sticky', top: 0, zIndex: 10 }}>
+        <header style={{ height: 56, background: 'white', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', gap: 12, flexShrink: 0, position: 'sticky', top: 0, zIndex: 10 }}>
+
+          {/* Mobile sidebar toggle */}
+          <button
+            className="dashboard-topbar-toggle"
+            onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+            style={{ display: 'none', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', cursor: 'pointer', color: '#374151', padding: 4 }}
+            aria-label="Open navigation"
+          >
+            <Menu size={20} />
+          </button>
+
+          <div style={{ flex: 1 }} />
 
           {/* Notifications Bell */}
           <div ref={notifRef} style={{ position: 'relative' }}>
@@ -237,7 +259,7 @@ export default function DashboardLayout() {
           </div>
         </header>
 
-        <main style={{ flex: 1, padding: 24, overflowY: 'auto' }}>
+        <main style={{ flex: 1, padding: 24, overflowY: 'auto', background: 'white' }}>
           <Outlet />
         </main>
       </div>
