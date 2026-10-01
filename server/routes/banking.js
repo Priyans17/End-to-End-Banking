@@ -4,7 +4,7 @@ const Account = require('../models/Account')
 const Transaction = require('../models/Transaction')
 const Beneficiary = require('../models/Beneficiary')
 
-// Get accounts — auto-create default savings account if user has none
+// Get accounts — auto-create default savings account if user has none, top up if balance is 0
 router.get('/accounts', auth, async (req, res) => {
   try {
     let accounts = await Account.find({ user: req.user._id, isActive: true })
@@ -12,6 +12,14 @@ router.get('/accounts', auth, async (req, res) => {
       const accNum = '10' + Date.now().toString().slice(-10)
       const newAcc = await Account.create({ user: req.user._id, accountNumber: accNum, type: 'savings', balance: 100000 })
       accounts = [newAcc]
+    } else {
+      // Top up any account that has zero balance (demo/seed accounts)
+      for (const acc of accounts) {
+        if (acc.balance === 0) {
+          acc.balance = 100000
+          await acc.save()
+        }
+      }
     }
     res.json({ accounts })
   } catch (err) { res.status(500).json({ message: err.message }) }
