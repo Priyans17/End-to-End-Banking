@@ -67,16 +67,11 @@ function ReceiptUpload({ total, onSuccess }) {
     if (!receipt) { toast.error('Please upload a receipt first'); return }
     setSubmitting(true)
     try {
-      // Simulate receipt verification delay
       await new Promise(r => setTimeout(r, 1200))
-      const receiptId = 'rcpt_' + Date.now()
       toast.success('Receipt verified!')
-      onSuccess(receiptId)
-    } catch {
-      toast.error('Receipt submission failed')
-    } finally {
-      setSubmitting(false)
-    }
+      onSuccess('rcpt_' + Date.now())
+    } catch { toast.error('Receipt submission failed') }
+    finally { setSubmitting(false) }
   }
 
   return (
@@ -141,9 +136,10 @@ function ReceiptUpload({ total, onSuccess }) {
           type="button"
           onClick={handleSubmit}
           disabled={submitting}
+          data-testid="receipt-submit-btn"
           style={{ marginTop: 16, width: '100%', padding: '13px', background: submitting ? '#94a3b8' : 'linear-gradient(135deg,#1e3a8a,#6366f1)', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: submitting ? 'not-allowed' : 'pointer', fontFamily: 'Urbanist,sans-serif' }}
         >
-          {submitting ? 'Verifying receipt...' : 'Submit & Complete Payment · ' + fmt(total)}
+          {submitting ? 'Verifying receipt...' : 'Submit Receipt & Complete Payment'}
         </button>
       )}
     </div>
@@ -262,7 +258,7 @@ function PaymentTabs({ clientSecret, total, onSuccess, onBack }) {
         </Elements>
       )}
       {tab === 'qr' && <ScanQR total={total} />}
-      {tab === 'receipt' && <ReceiptUpload />}
+      {tab === 'receipt' && <ReceiptUpload total={total} onSuccess={onSuccess} />}
     </div>
   )
 }
