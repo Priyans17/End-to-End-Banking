@@ -140,7 +140,7 @@ export default function MutualFunds() {
           {tab === 'My Investments' && (
             <div>
               {investments.length > 0 && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 24, marginBottom: 24 }}>
+                <div className="two-col-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 24, marginBottom: 24 }}>
                   <div>
                     <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', marginBottom: 16 }}>Portfolio Allocation</h3>
                     <ResponsiveContainer width="100%" height={240}>
