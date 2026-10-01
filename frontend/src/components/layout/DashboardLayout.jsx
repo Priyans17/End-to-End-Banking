@@ -103,7 +103,7 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#f3f4f6' }}>
+    <div id="dashboard-root" style={{ display: 'flex', minHeight: '100vh', background: '#f3f4f6' }}>
       {/* Sidebar */}
       <aside style={{ width: sidebarOpen ? 220 : 56, minHeight: '100vh', background: '#111827', transition: 'width 0.2s ease', display: 'flex', flexDirection: 'column', overflow: 'hidden', flexShrink: 0, position: 'sticky', top: 0, height: '100vh' }}>
         <div style={{ padding: '16px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1f2937', minHeight: 56 }}>
