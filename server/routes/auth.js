@@ -52,6 +52,13 @@ router.post('/login', async (req, res) => {
 
     await User.updateOne({ _id: user._id }, { loginAttempts: 0, lockUntil: null, lastLogin: new Date() })
 
+    // Ensure user has at least one account (self-heal for users created before auto-account logic)
+    const existingAccounts = await Account.countDocuments({ user: user._id, isActive: true })
+    if (existingAccounts === 0) {
+      const accNum = '10' + Date.now().toString().slice(-10)
+      await Account.create({ user: user._id, accountNumber: accNum, type: 'savings', balance: 50000 })
+    }
+
     const token = signToken(user._id)
     res.json({
       token,
