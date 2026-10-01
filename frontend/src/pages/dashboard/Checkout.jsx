@@ -14,7 +14,7 @@ const inp = { width: '100%', padding: '11px 14px', borderRadius: 8, border: '1.5
 const CARD_STYLE = {
   style: {
     base: {
-      fontSize: '15px',
+      fontSize: '16px',
       fontFamily: 'Urbanist, sans-serif',
       color: '#0f172a',
       '::placeholder': { color: '#94a3b8' },

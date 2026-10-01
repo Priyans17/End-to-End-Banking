@@ -39,4 +39,38 @@ body {
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #f1f5f9; }
+
+/* ── Mobile responsiveness ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Collapse two-column layouts to single column */
+  .two-col-layout { grid-template-columns: 1fr !important; }
+
+  /* Dashboard sidebar hidden on mobile — toggled via JS */
+  .sidebar-desktop { display: none !important; }
+
+  /* Hero stats wrap tightly */
+  .hero-stats { gap: 20px !important; }
+
+  /* Checkout / Banking grids */
+  [style*="gridTemplateColumns: '1fr 300px'"],
+  [style*="gridTemplateColumns: '1fr 360px'"],
+  [style*="gridTemplateColumns: '1fr 320px'"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Stripe card element — ensure it's tappable */
+  .StripeElement { font-size: 16px !important; }
+
+  /* Prevent iOS zoom on inputs */
+  input, select, textarea { font-size: 16px !important; }
+
+  /* Tabs scroll horizontally */
+  [style*="overflowX: auto"] { -webkit-overflow-scrolling: touch; }
+}
+
+@media (max-width: 480px) {
+  /* Tighter padding on small phones */
+  [style*="padding: 28"] { padding: 16px !important; }
+  [style*="padding: 32"] { padding: 20px !important; }
+}
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }

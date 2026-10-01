@@ -3,7 +3,7 @@ import { PieChart, TrendingUp, Search, CheckCircle, XCircle } from 'lucide-react
 import toast from 'react-hot-toast'
 import { PieChart as RechartsPie, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 
-const TABS = ['Explore Funds', 'My Investments', 'SIP Manager', 'Start SIP']
+const TABS = ['Explore Funds', 'My Investments', 'Start SIP']
 const COLORS = ['#1e3a8a', '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
 const fmt = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(n || 0)
 

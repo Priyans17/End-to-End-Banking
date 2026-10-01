@@ -25,9 +25,9 @@ function ProductIcon({ category, name }) {
   const colors = PRODUCT_COLORS[category] || { bg: '#f9fafb', icon: '#6b7280' }
   const Icon = PRODUCT_ICONS[category] || Zap
   return (
-    <div style={{ height: 140, background: colors.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-      <div style={{ width: 56, height: 56, background: colors.icon + '18', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Icon size={28} color={colors.icon} />
+    <div style={{ height: 100, background: colors.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+      <div style={{ width: 44, height: 44, background: colors.icon + '18', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Icon size={22} color={colors.icon} />
       </div>
       <div style={{ fontSize: 11, fontWeight: 600, color: colors.icon, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center', padding: '0 12px' }}>{category}</div>
     </div>
