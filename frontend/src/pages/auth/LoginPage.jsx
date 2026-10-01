@@ -17,7 +17,7 @@ export default function LoginPage() {
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'demo@mail.com', password: 'abcd@1234' })
+        body: JSON.stringify({ email: 'demo@gmail.com', password: 'abcd@1234' })
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.message || 'Login failed')
