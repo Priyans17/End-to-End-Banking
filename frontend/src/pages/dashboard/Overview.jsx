@@ -50,7 +50,7 @@ export default function Overview() {
         <StatCard title="Insurance Cover" value={loading ? '...' : fmt(summary?.insuranceCover || 2000000)} subtitle="Total coverage" icon={Shield} color="#f59e0b" />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 20, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, marginBottom: 20 }}>
         <div style={{ background: 'white', borderRadius: 10, padding: 20, border: '1px solid #e5e7eb' }}>
           <h3 style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 16 }}>Portfolio Performance</h3>
           <ResponsiveContainer width="100%" height={200}>

@@ -79,7 +79,7 @@ export default function Banking() {
       </div>
 
       {/* Summary Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginBottom: 20 }}>
         {[
           { label: 'Total Balance', value: fmt(totalBalance), sub: `${accounts.length} account${accounts.length !== 1 ? 's' : ''}`, color: '#1e3a8a' },
           { label: "Today's Credits", value: fmt(todayIn), sub: `${todayTx.filter(t => t.type === 'credit').length} transactions`, color: '#16a34a' },
@@ -546,7 +546,7 @@ function Cards({ accounts, token }) {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         {cards.map(card => (
-          <div key={card._id} style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: 20, alignItems: 'start' }}>
+          <div key={card._id} className="two-col-layout" style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: 20, alignItems: 'start' }}>
             <div>
               <div style={{ borderRadius: 16, padding: 22, background: CARD_COLORS[card.cardType] || CARD_COLORS.debit, color: 'white', position: 'relative', overflow: 'hidden', opacity: card.status === 'locked' ? 0.7 : 1 }}>
                 <div style={{ position: 'absolute', top: -20, right: -20, width: 100, height: 100, background: 'rgba(255,255,255,0.06)', borderRadius: '50%' }} />
