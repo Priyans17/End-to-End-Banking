@@ -102,7 +102,7 @@ export default function Overview() {
 
       <div style={{ background: 'white', borderRadius: 10, padding: 20, border: '1px solid #e5e7eb' }}>
         <h3 style={{ fontSize: 15, fontWeight: 600, color: '#111827', marginBottom: 16 }}>Quick Actions</h3>
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10 }} className="quick-actions-grid">
           {[
             { label: 'Send Money', icon: ArrowUpRight, color: '#1e3a8a', href: '/dashboard/banking' },
             { label: 'Pay Bills', icon: CreditCard, color: '#6366f1', href: '/dashboard/banking' },
@@ -110,13 +110,13 @@ export default function Overview() {
             { label: 'Invest', icon: PieChart, color: '#f59e0b', href: '/dashboard/mutual-funds' },
             { label: 'Wallet', icon: Wallet, color: '#8b5cf6', href: '/dashboard/banking' },
           ].map(({ label, icon: Icon, color, href }) => (
-            <Link key={label} to={href} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '14px 20px', borderRadius: 8, border: '1px solid #f3f4f6', textDecoration: 'none', background: '#fafafa', minWidth: 90 }}
+            <Link key={label} to={href} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '12px 8px', borderRadius: 8, border: '1px solid #f3f4f6', textDecoration: 'none', background: '#fafafa' }}
               onMouseEnter={e => { e.currentTarget.style.background = color + '10'; e.currentTarget.style.borderColor = color + '40' }}
               onMouseLeave={e => { e.currentTarget.style.background = '#fafafa'; e.currentTarget.style.borderColor = '#f3f4f6' }}>
               <div style={{ width: 36, height: 36, background: color + '15', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon size={17} color={color} />
               </div>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{label}</span>
+              <span style={{ fontSize: 11, fontWeight: 600, color: '#374151', textAlign: 'center', lineHeight: 1.2 }}>{label}</span>
             </Link>
           ))}
         </div>
