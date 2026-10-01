@@ -20,16 +20,18 @@
   --color-warning: #f59e0b;
 }
 
-/* Dark mode token overrides */
-[data-theme="dark"] {
-  --color-bg: #0f172a;
-  --color-surface: #1e293b;
-  --color-text: #f1f5f9;
-  --color-muted: #94a3b8;
-  --color-border: #334155;
+/* Dark mode — invert the whole UI, then re-invert media so images stay natural */
+[data-theme="dark"] #dashboard-root {
+  filter: invert(1) hue-rotate(180deg);
 }
 
-[data-theme="dark"] body { background-color: var(--color-bg); color: var(--color-text); }
+[data-theme="dark"] #dashboard-root img,
+[data-theme="dark"] #dashboard-root video,
+[data-theme="dark"] #dashboard-root canvas,
+[data-theme="dark"] #dashboard-root iframe,
+[data-theme="dark"] #dashboard-root .no-invert {
+  filter: invert(1) hue-rotate(180deg);
+}
 
 html { scroll-behavior: smooth; }
 

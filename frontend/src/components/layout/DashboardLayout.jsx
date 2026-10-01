@@ -104,14 +104,7 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#f3f4f6' }}>
-      {/* Mobile overlay backdrop */}
-      <div
-        className="sidebar-overlay"
-        onClick={() => setMobileSidebarOpen(false)}
-        style={{ display: 'none', position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 199 }}
-      />
-
+    <div id="dashboard-root" style={{ display: 'flex', minHeight: '100vh', background: '#f3f4f6' }}>
       {/* Sidebar */}
       <aside
         className={`dashboard-sidebar${mobileSidebarOpen ? ' open' : ''}`}
