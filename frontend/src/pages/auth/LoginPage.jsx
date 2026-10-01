@@ -12,6 +12,22 @@ export default function LoginPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
+  const loginWithDemo = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'demo@mail.com', password: 'abcd@1234' })
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || 'Login failed')
+      login(data.user, data.token)
+      toast.success('Welcome back')
+      navigate('/dashboard')
+    } catch (err) { toast.error(err.message) }
+    finally { setLoading(false) }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -91,8 +107,10 @@ export default function LoginPage() {
           </form>
           <button
             type="button"
-            onClick={fillDemo}
-            style={{ display: 'block', width: '100%', marginTop: 12, padding: '9px', borderRadius: 6, border: '1.5px dashed #bae6fd', background: '#f0f9ff', color: '#0369a1', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Urbanist,sans-serif' }}
+            onClick={loginWithDemo}
+            disabled={loading}
+            data-testid="demo-login-btn"
+            style={{ display: 'block', width: '100%', marginTop: 12, padding: '10px', borderRadius: 6, border: '1.5px dashed #bae6fd', background: '#f0f9ff', color: '#0369a1', fontSize: 13, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Urbanist,sans-serif' }}
           >
             Use Demo Account
           </button>

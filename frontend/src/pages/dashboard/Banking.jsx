@@ -158,23 +158,12 @@ export default function Banking() {
                 <button onClick={() => {
                   if (!filtered.length) return toast.error('No transactions to export')
                   const rows = [['Date','Description','Mode','Type','Amount','Balance']]
-                  filtered.forEach(tx => rows.push([
-                    new Date(tx.date).toLocaleString('en-US'),
-                    `"${(tx.description||'').replace(/"/g,'""')}"`,
-                    tx.mode || '',
-                    tx.type || '',
-                    tx.amount,
-                    tx.balance
-                  ]))
+                  filtered.forEach(tx => rows.push([new Date(tx.date).toLocaleString('en-US'), '"'+(tx.description||'').replace(/"/g,'""')+'"', tx.mode||'', tx.type||'', tx.amount, tx.balance]))
                   const csv = rows.map(r => r.join(',')).join('\n')
                   const blob = new Blob([csv], { type: 'text/csv' })
                   const url = URL.createObjectURL(blob)
-                  const a = document.createElement('a')
-                  a.href = url
-                  a.download = `transactions_${new Date().toISOString().slice(0,10)}.csv`
-                  a.click()
-                  URL.revokeObjectURL(url)
-                  toast.success(`Exported ${filtered.length} transactions`)
+                  const a = document.createElement('a'); a.href = url; a.download = 'transactions_' + new Date().toISOString().slice(0,10) + '.csv'; a.click(); URL.revokeObjectURL(url)
+                  toast.success('Exported ' + filtered.length + ' transactions')
                 }} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '9px 14px', borderRadius: 6, border: '1px solid #d1d5db', background: 'white', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#374151', fontFamily: 'Urbanist,sans-serif' }}>
                   <Download size={13} /> Export
                 </button>
@@ -207,11 +196,9 @@ export default function Banking() {
                       ))}
                     </div>
                     {filtered.length > 5 && (
-                      <button
-                        onClick={() => setShowAllTx(!showAllTx)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '12px auto 0', padding: '8px 20px', borderRadius: 20, border: '1px solid #e5e7eb', background: 'white', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#1e3a8a', fontFamily: 'Urbanist,sans-serif' }}
-                      >
-                        {showAllTx ? '▲ Show less' : `••• Show all ${filtered.length} transactions`}
+                      <button onClick={() => setShowAllTx(!showAllTx)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '12px auto 0', padding: '8px 20px', borderRadius: 20, border: '1px solid #e5e7eb', background: 'white', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#1e3a8a', fontFamily: 'Urbanist,sans-serif' }}>
+                        {showAllTx ? '▲ Show less' : '••• View all ' + filtered.length + ' transactions'}
                       </button>
                     )}
                   </div>

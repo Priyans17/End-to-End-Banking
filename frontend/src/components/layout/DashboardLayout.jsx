@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { LayoutDashboard, Landmark, TrendingUp, PieChart, Shield, ShoppingBag, ShoppingCart, Package, LogOut, Menu, X, Bell, ChevronDown, User, TrendingDown, AlertTriangle, CheckCircle, Info, Trash2 } from 'lucide-react'
+import { useTheme } from '../../context/ThemeContext'
+import { LayoutDashboard, Landmark, TrendingUp, PieChart, Shield, ShoppingBag, ShoppingCart, Package, LogOut, Menu, X, Bell, ChevronDown, User, TrendingDown, AlertTriangle, CheckCircle, Info, Trash2, Sun, Moon, Monitor } from 'lucide-react'
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Overview', end: true },
@@ -44,6 +45,7 @@ export default function DashboardLayout() {
   const [notifications, setNotifications] = useState([])
   const [unreadCount, setUnreadCount] = useState(0)
   const { user, logout } = useAuth()
+  const { theme, toggle, setSystem } = useTheme()
   const navigate = useNavigate()
   const notifRef = useRef(null)
   const token = localStorage.getItem('aura_token')
@@ -168,6 +170,18 @@ export default function DashboardLayout() {
 
           <div style={{ flex: 1 }} />
 
+          {/* Theme toggle */}
+          <div style={{ display: 'flex', gap: 2, background: '#f3f4f6', borderRadius: 8, padding: 3 }}>
+            <button onClick={toggle} title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', borderRadius: 6, color: '#6b7280', display: 'flex', alignItems: 'center' }}>
+              {theme === 'dark' ? <Sun size={15} color="#f59e0b" /> : <Moon size={15} />}
+            </button>
+            <button onClick={setSystem} title="Use system theme"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', borderRadius: 6, color: '#6b7280', display: 'flex', alignItems: 'center' }}>
+              <Monitor size={15} />
+            </button>
+          </div>
+
           {/* Notifications Bell */}
           <div ref={notifRef} style={{ position: 'relative' }}>
             <button id="notifications-bell" data-testid="notifications-bell-btn" aria-label="Notifications" onClick={() => { setNotifOpen(!notifOpen); setUserMenuOpen(false) }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#6b7280', position: 'relative', display: 'flex', alignItems: 'center', padding: 4 }}>
@@ -181,20 +195,15 @@ export default function DashboardLayout() {
 
             {notifOpen && (
               <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 8, background: 'white', border: '1px solid #e5e7eb', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', width: 360, zIndex: 200, overflow: 'hidden' }}>
-                {/* Header */}
                 <div style={{ padding: '14px 16px', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <span style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', fontFamily: 'Urbanist,sans-serif' }}>Notifications</span>
                     {unreadCount > 0 && <span style={{ marginLeft: 8, fontSize: 11, background: '#eff6ff', color: '#1e3a8a', padding: '2px 8px', borderRadius: 100, fontWeight: 700 }}>{unreadCount} new</span>}
                   </div>
                   {unreadCount > 0 && (
-                    <button onClick={markAllRead} style={{ fontSize: 12, color: '#1e3a8a', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Urbanist,sans-serif', fontWeight: 600 }}>
-                      Mark all read
-                    </button>
+                    <button onClick={markAllRead} style={{ fontSize: 12, color: '#1e3a8a', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Urbanist,sans-serif', fontWeight: 600 }}>Mark all read</button>
                   )}
                 </div>
-
-                {/* List */}
                 <div style={{ maxHeight: 380, overflowY: 'auto' }}>
                   {notifications.length === 0 ? (
                     <div style={{ padding: '40px 20px', textAlign: 'center', color: '#94a3b8', fontSize: 13 }}>
@@ -224,7 +233,6 @@ export default function DashboardLayout() {
                     </div>
                   ))}
                 </div>
-
                 {notifications.length > 0 && (
                   <div style={{ padding: '10px 16px', borderTop: '1px solid #f1f5f9', textAlign: 'center' }}>
                     <span style={{ fontSize: 12, color: '#94a3b8', fontFamily: 'Urbanist,sans-serif' }}>{notifications.length} notification{notifications.length !== 1 ? 's' : ''} total</span>
@@ -243,7 +251,6 @@ export default function DashboardLayout() {
               <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{user?.name?.split(' ')[0] || 'Account'}</span>
               <ChevronDown size={14} color="#6b7280" />
             </button>
-
             {userMenuOpen && (
               <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 4, background: 'white', border: '1px solid #e5e7eb', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', minWidth: 180, zIndex: 100 }}>
                 <div style={{ padding: '12px 14px', borderBottom: '1px solid #f3f4f6' }}>
