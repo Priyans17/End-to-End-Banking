@@ -89,7 +89,7 @@ export default function LoginPage() {
             data-testid="demo-login-btn"
             style={{ display: 'block', width: '100%', marginTop: 12, padding: '10px', borderRadius: 6, border: '1.5px dashed #bae6fd', background: '#f0f9ff', color: '#0369a1', fontSize: 13, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Urbanist,sans-serif', textAlign: 'center' }}
           >
-            {loading ? 'Signing in...' : '🔑 Use Demo Account — demo@gmail.com / abcd@1234'}
+            {loading ? 'Signing in...' : 'Use Demo Account'}
           </button>
           <p style={{ textAlign: 'center', marginTop: 14, fontSize: 13, color: '#6b7280' }}>
             No account?{' '}<Link to="/register" style={{ color: '#1e3a8a', fontWeight: 600, textDecoration: 'none' }}>Create one</Link>
