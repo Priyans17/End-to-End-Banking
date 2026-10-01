@@ -221,12 +221,12 @@ function TransferForm({ token, accounts, onSuccess }) {
   const [form, setForm] = useState({ fromAccount: accounts[0]?._id || '', toAccount: '', amount: '', mode: 'SWIFT', remarks: '' })
   const [loading, setLoading] = useState(false)
 
-  // Auto-select first account when accounts load
-  useState(() => {
-    if (accounts.length > 0 && !form.fromAccount) {
-      setForm(f => ({ ...f, fromAccount: accounts[0]._id }))
+  // Auto-select first account whenever accounts list changes
+  useEffect(() => {
+    if (accounts.length > 0) {
+      setForm(f => ({ ...f, fromAccount: f.fromAccount || accounts[0]._id }))
     }
-  })
+  }, [accounts])
 
   const handleTransfer = async (e) => {
     e.preventDefault()
@@ -253,11 +253,21 @@ function TransferForm({ token, accounts, onSuccess }) {
       <form onSubmit={handleTransfer} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         <div>
           <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>From Account</label>
-          <select id='from-account' data-testid='from-account-select' aria-label='From Account' value={form.fromAccount} onChange={e => setForm({...form, fromAccount: e.target.value})} required style={inp}>
-            <option value="">Select account</option>
-            {accounts.map(a => <option key={a._id} value={a._id}>{a.type.replace('_',' ')} — ****{a.accountNumber?.slice(-4)} · {new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(a.balance)}</option>)}
-          </select>
-          {selectedAcc && <div style={hint}>Available: {new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(selectedAcc.balance)}</div>}
+          {accounts.length === 0 ? (
+            <div style={{ padding: '12px 14px', borderRadius: 6, border: '1px solid #fde68a', background: '#fefce8', fontSize: 13, color: '#92400e' }}>
+              No accounts found. Please log out and log back in to auto-create your account.
+            </div>
+          ) : accounts.length === 1 ? (
+            <div style={{ padding: '12px 14px', borderRadius: 6, border: '1px solid #d1d5db', background: '#f9fafb', fontSize: 13, color: '#111827', fontWeight: 600 }}>
+              {selectedAcc?.type?.replace('_',' ')} — ****{selectedAcc?.accountNumber?.slice(-4)}
+              <span style={{ float: 'right', color: '#16a34a' }}>{new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(selectedAcc?.balance || 0)}</span>
+            </div>
+          ) : (
+            <select id='from-account' data-testid='from-account-select' aria-label='From Account' value={form.fromAccount} onChange={e => setForm({...form, fromAccount: e.target.value})} required style={inp}>
+              {accounts.map(a => <option key={a._id} value={a._id}>{a.type.replace('_',' ')} — ****{a.accountNumber?.slice(-4)} · {new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(a.balance)}</option>)}
+            </select>
+          )}
+          {selectedAcc && accounts.length > 1 && <div style={hint}>Available: {new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(selectedAcc.balance)}</div>}
         </div>
         <div>
           <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 5 }}>To Account / IBAN</label>
