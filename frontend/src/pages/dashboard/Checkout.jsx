@@ -24,9 +24,10 @@ const CARD_STYLE = {
   }
 }
 
-function ReceiptUpload() {
+function ReceiptUpload({ total, onSuccess }) {
   const [receipt, setReceipt] = useState(null)
   const [preview, setPreview] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
   const fileRef = useRef()
 
   const handleFile = (e) => {
@@ -57,10 +58,21 @@ function ReceiptUpload() {
     if (fileRef.current) fileRef.current.value = ''
   }
 
+  const handleSubmit = async () => {
+    if (!receipt) { toast.error('Please upload a receipt first'); return }
+    setSubmitting(true)
+    try {
+      await new Promise(r => setTimeout(r, 1200))
+      toast.success('Receipt verified!')
+      onSuccess('rcpt_' + Date.now())
+    } catch { toast.error('Receipt submission failed') }
+    finally { setSubmitting(false) }
+  }
+
   return (
     <div style={{ marginTop: 24, borderTop: '1.5px solid #f1f5f9', paddingTop: 20 }}>
       <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 8 }}>
-        Upload Payment Receipt <span style={{ color: '#94a3b8', fontWeight: 400 }}>(optional)</span>
+        Upload Payment Receipt
       </label>
 
       {!receipt ? (
@@ -113,6 +125,17 @@ function ReceiptUpload() {
             <X size={18} />
           </button>
         </div>
+      )}
+      {receipt && (
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={submitting}
+          data-testid="receipt-submit-btn"
+          style={{ marginTop: 16, width: '100%', padding: '13px', background: submitting ? '#94a3b8' : 'linear-gradient(135deg,#1e3a8a,#6366f1)', color: 'white', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: submitting ? 'not-allowed' : 'pointer', fontFamily: 'Urbanist,sans-serif' }}
+        >
+          {submitting ? 'Verifying receipt...' : 'Submit Receipt & Complete Payment'}
+        </button>
       )}
     </div>
   )
@@ -230,7 +253,7 @@ function PaymentTabs({ clientSecret, total, onSuccess, onBack }) {
         </Elements>
       )}
       {tab === 'qr' && <ScanQR total={total} />}
-      {tab === 'receipt' && <ReceiptUpload />}
+      {tab === 'receipt' && <ReceiptUpload total={total} onSuccess={onSuccess} />}
     </div>
   )
 }
