@@ -218,8 +218,15 @@ export default function Banking() {
 }
 
 function TransferForm({ token, accounts, onSuccess }) {
-  const [form, setForm] = useState({ fromAccount: '', toAccount: '', amount: '', mode: 'SWIFT', remarks: '' })
+  const [form, setForm] = useState({ fromAccount: accounts[0]?._id || '', toAccount: '', amount: '', mode: 'SWIFT', remarks: '' })
   const [loading, setLoading] = useState(false)
+
+  // Auto-select first account when accounts load
+  useState(() => {
+    if (accounts.length > 0 && !form.fromAccount) {
+      setForm(f => ({ ...f, fromAccount: accounts[0]._id }))
+    }
+  })
 
   const handleTransfer = async (e) => {
     e.preventDefault()
