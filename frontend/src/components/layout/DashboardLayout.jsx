@@ -38,7 +38,7 @@ const timeAgo = (date) => {
 }
 
 export default function DashboardLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(() => typeof window === 'undefined' || window.innerWidth > 768)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
   const [notifications, setNotifications] = useState([])
@@ -65,6 +65,8 @@ export default function DashboardLayout() {
     const interval = setInterval(fetchNotifications, 30000)
     return () => clearInterval(interval)
   }, [])
+
+  const closeOnMobile = () => { if (window.innerWidth <= 768) setSidebarOpen(false) }
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -104,8 +106,9 @@ export default function DashboardLayout() {
 
   return (
     <div id="dashboard-root" style={{ display: 'flex', minHeight: '100vh', background: '#f3f4f6' }}>
+      {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
       {/* Sidebar */}
-      <aside style={{ width: sidebarOpen ? 220 : 56, minHeight: '100vh', background: '#111827', transition: 'width 0.2s ease', display: 'flex', flexDirection: 'column', overflow: 'hidden', flexShrink: 0, position: 'sticky', top: 0, height: '100vh' }}>
+      <aside className={'dash-sidebar' + (sidebarOpen ? ' open' : '')} style={{ width: sidebarOpen ? 220 : 56, minHeight: '100vh', background: '#111827', transition: 'width 0.2s ease', display: 'flex', flexDirection: 'column', overflow: 'hidden', flexShrink: 0, position: 'sticky', top: 0, height: '100vh' }}>
         <div style={{ padding: '16px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1f2937', minHeight: 56 }}>
           {sidebarOpen && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -122,7 +125,7 @@ export default function DashboardLayout() {
 
         <nav style={{ flex: 1, padding: '10px 6px', display: 'flex', flexDirection: 'column', gap: 2, overflowY: 'auto' }}>
           {navItems.map(({ to, icon: Icon, label, end }) => (
-            <NavLink key={to} to={to} end={end} data-testid={`nav-${label.toLowerCase()}`} aria-label={label} style={({ isActive }) => ({
+            <NavLink key={to} to={to} end={end} onClick={closeOnMobile} data-testid={`nav-${label.toLowerCase()}`} aria-label={label} style={({ isActive }) => ({
               display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px',
               borderRadius: 6, textDecoration: 'none', transition: 'background 0.15s',
               background: isActive ? '#1e3a8a' : 'transparent',
@@ -146,7 +149,10 @@ export default function DashboardLayout() {
       {/* Main content */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}>
         {/* Top bar */}
-        <header style={{ height: 56, background: 'white', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '0 20px', gap: 12, flexShrink: 0, position: 'sticky', top: 0, zIndex: 10 }}>
+        <header className="dash-topbar" style={{ height: 56, background: 'white', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '0 20px', gap: 12, flexShrink: 0, position: 'sticky', top: 0, zIndex: 10 }}>
+          <button className="mobile-menu-btn" aria-label="Open menu" onClick={() => setSidebarOpen(true)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#374151', alignItems: 'center', marginRight: 'auto', padding: 8 }}>
+            <Menu size={22} />
+          </button>
 
           {/* Theme toggle */}
           <div style={{ display: 'flex', gap: 2, background: '#f3f4f6', borderRadius: 8, padding: 3 }}>
@@ -172,7 +178,7 @@ export default function DashboardLayout() {
             </button>
 
             {notifOpen && (
-              <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 8, background: 'white', border: '1px solid #e5e7eb', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', width: 360, zIndex: 200, overflow: 'hidden' }}>
+              <div className="notif-dropdown" style={{ position: 'absolute', right: 0, top: '100%', marginTop: 8, background: 'white', border: '1px solid #e5e7eb', borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', width: 360, zIndex: 200, overflow: 'hidden' }}>
                 <div style={{ padding: '14px 16px', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
                     <span style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', fontFamily: 'Urbanist,sans-serif' }}>Notifications</span>
@@ -226,7 +232,7 @@ export default function DashboardLayout() {
               <div style={{ width: 28, height: 28, background: '#1e3a8a', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <User size={14} color="white" />
               </div>
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{user?.name?.split(' ')[0] || 'Account'}</span>
+              <span className="user-name-label" style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{user?.name?.split(' ')[0] || 'Account'}</span>
               <ChevronDown size={14} color="#6b7280" />
             </button>
             {userMenuOpen && (

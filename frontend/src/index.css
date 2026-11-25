@@ -81,3 +81,75 @@ input, select, textarea { font-size: 16px !important; }
   .quick-actions-grid { grid-template-columns: repeat(3, 1fr) !important; }
   [style*="minmax(220px"] { grid-template-columns: 1fr !important; }
 }
+
+/* ---------- Responsive / mobile (incl. Samsung Galaxy & Android browsers) ---------- */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html, body { max-width: 100%; overflow-x: hidden; }
+img, video, canvas, svg { max-width: 100%; }
+button, a, select, input { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+
+.mobile-menu-btn { display: none; }
+.sidebar-backdrop { display: none; }
+
+@media (max-width: 768px) {
+  /* Touch targets >= 44px */
+  button, select, input:not([type="checkbox"]):not([type="radio"]) { min-height: 44px; }
+
+  /* Landing navbar -> hamburger */
+  .mobile-menu-btn { display: flex !important; }
+  .site-header > div { padding: 0 16px !important; }
+  .site-nav { display: none !important; }
+  .site-nav.open {
+    display: flex !important; flex-direction: column; align-items: flex-start !important; gap: 0 !important;
+    position: absolute; top: 60px; left: 0; right: 0; background: #fff;
+    border-bottom: 1px solid #e5e7eb; padding: 8px 16px; box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+  }
+  .site-nav.open a { padding: 14px 0; width: 100%; font-size: 15px !important; }
+  .site-actions { gap: 6px !important; }
+  .site-actions a, .site-actions button:not(.mobile-menu-btn) { padding: 10px 12px !important; display: inline-flex; align-items: center; }
+
+  /* Dashboard sidebar -> off-canvas drawer */
+  .dash-sidebar {
+    position: fixed !important; top: 0; left: 0; z-index: 300; height: 100dvh !important;
+    width: 240px !important; transform: translateX(-100%); transition: transform 0.25s ease !important;
+  }
+  .dash-sidebar.open { transform: translateX(0); }
+  .sidebar-backdrop { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 250; }
+  .dash-topbar { padding: 0 12px !important; gap: 8px !important; }
+  .user-name-label { display: none; }
+
+  /* Notification dropdown fits the viewport */
+  .notif-dropdown {
+    position: fixed !important; top: 60px !important; left: 8px !important; right: 8px !important;
+    width: auto !important; margin-top: 0 !important;
+  }
+
+  /* Collapse side-by-side layouts (cart, checkout, funds, cards) */
+  .rg-collapse,
+  main [style*="grid-template-columns: 1fr 360px"],
+  main [style*="grid-template-columns: 1fr 320px"],
+  main [style*="grid-template-columns: 1fr 300px"],
+  main [style*="grid-template-columns: 300px 1fr"],
+  main [style*="grid-template-columns: 1fr 1fr;"] { grid-template-columns: 1fr !important; }
+  .rg-stack-sm,
+  main [style*="grid-template-columns: 1fr 1fr 1fr"],
+  main [style*="grid-template-columns: repeat(3, 1fr)"] { grid-template-columns: 1fr 1fr !important; }
+
+  /* Wide content scrolls instead of breaking layout */
+  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .rg-stack-sm,
+  main [style*="grid-template-columns: 1fr 1fr 1fr"],
+  main [style*="grid-template-columns: repeat(3, 1fr)"] { grid-template-columns: 1fr !important; }
+  .quick-actions-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  [style*="minmax(280px"], [style*="minmax(320px"], [style*="minmax(240px"] { grid-template-columns: 1fr !important; }
+  h1 { word-break: break-word; }
+}
+
+/* Small Samsung phones (Galaxy A/S ~360px) and foldable cover screens */
+@media (max-width: 360px) {
+  main { padding: 10px !important; }
+  .site-actions a:first-child { display: none; }
+}

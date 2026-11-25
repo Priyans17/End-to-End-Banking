@@ -12,7 +12,7 @@ export default function Navbar() {
   const handleLogout = () => { logout(); navigate('/') }
 
   return (
-    <header style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #e5e7eb' }}>
+    <header className="site-header" style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #e5e7eb' }}>
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 60 }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
           <div style={{ width: 30, height: 30, background: '#1e3a8a', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -21,13 +21,13 @@ export default function Navbar() {
           <span style={{ fontFamily: 'Urbanist,sans-serif', fontWeight: 800, fontSize: 18, color: '#111827' }}>Aura</span>
         </Link>
 
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+        <nav className={'site-nav' + (mobileOpen ? ' open' : '')} onClick={() => setMobileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
           <a href="#features" style={{ color: '#6b7280', textDecoration: 'none', fontWeight: 500, fontSize: 14 }}>Features</a>
           <a href="#testimonials" style={{ color: '#6b7280', textDecoration: 'none', fontWeight: 500, fontSize: 14 }}>Testimonials</a>
           <a href="#faq" style={{ color: '#6b7280', textDecoration: 'none', fontWeight: 500, fontSize: 14 }}>FAQ</a>
         </nav>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div className="site-actions" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {user ? (
             <>
               <Link to="/dashboard" style={{ padding: '7px 16px', borderRadius: 6, background: '#1e3a8a', color: 'white', textDecoration: 'none', fontWeight: 600, fontSize: 13 }}>Dashboard</Link>
@@ -39,6 +39,9 @@ export default function Navbar() {
               <Link to="/register" style={{ padding: '7px 16px', borderRadius: 6, background: '#1e3a8a', color: 'white', textDecoration: 'none', fontWeight: 700, fontSize: 13 }}>Get Started</Link>
             </>
           )}
+          <button className="mobile-menu-btn" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} onClick={() => setMobileOpen(!mobileOpen)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#111827', padding: 8, alignItems: 'center' }}>
+            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
       </div>
     </header>
